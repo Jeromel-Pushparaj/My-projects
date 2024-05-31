@@ -67,24 +67,31 @@ def open_app():
 
 
 
+
 def take_command():
-    try: 
+    recognizer = li.Recognizer()
+    command = ""
+    
+    try:
         with li.Microphone() as source:
-            
-            print("listening.....")
-            voice = listner.listen(source)
-            command = listner.recognize_google(voice)
+            print("Listening...")
+            audio = recognizer.listen(source)
+            command = recognizer.recognize_google(audio)
             command = command.lower()
             if 'light' in command:
-                command = command.replace('light','')
-                print (command)        
-    except :
-        pass
-        return ""
-    return command.lower()
-
-
-#below all is calling the each function and activate the programe
+                command = command.replace('light', '')
+                print(command)
+    except li.RequestError:
+        # API was unreachable or unresponsive
+        print("Could not request results from Google Speech Recognition service")
+    except li.UnknownValueError:
+        # Speech was unintelligible
+        print("Google Speech Recognition could not understand the audio")
+    except Exception as e:
+        # Catch other exceptions
+        print(f"An error occurred: {e}")
+    
+    return command
 
 
 talk("Loading   your   AI   personal   assistant   light")
@@ -125,10 +132,23 @@ while 1:
         question= take_command()
         app_id="LAUL5Y-VTYGTGG5Y5"
         client = wolframalpha.Client('LAUL5Y-VTYGTGG5Y5')
-        res = client.query(question)
-        answer = next(res.results).text
-        talk(answer)
-        print(answer)
+        try:
+            res = client.query(question)
+            results_iterator = iter(res.results)
+            answer = next(res.results).text
+            talk(answer)
+            print(answer)
+        except StopIteration:
+            print("No results found in res.results")
+            answer = "No answer available"
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            answer = "An error occurred while fetching the answer"
+            print(answer)
+    
+
+
+
 
     elif 'open' in command:
         talk('give a second sir')
