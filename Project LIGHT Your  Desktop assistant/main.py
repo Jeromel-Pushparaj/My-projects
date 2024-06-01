@@ -117,7 +117,7 @@ while 1:
         song = command.replace('play', '')
         talk('playing' + song)
         pywhatkit.playonyt(song)
-    elif 'search' in command:
+    elif 'search' in command:   
         search = command.replace('please search','')
         talk('give  a  second  sir')
         pywhatkit.search(search)
